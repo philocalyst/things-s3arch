@@ -13,6 +13,10 @@ Select a todo and get brought to its location in the things app.
 
 ## Dependencies
 
+All of the below can be installed with one simple command:
+'brew install luajit luarocks'
+(The libraries are default bundled)
+
 - luaJIT (Ensure this is installed on your system)
 - luarocks
 - Libraries

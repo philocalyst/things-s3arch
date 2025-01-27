@@ -12,15 +12,10 @@ package.path = package.path
 	.. script_dir
 	.. "lua_modules/share/lua/5.1/?/init.lua"
 
-package.cpath = package.cpath
-	.. ";"
-	.. script_dir
-	.. "lua_modules/lib/lua/5.1/luasql/sqlite3.so;"
-	.. script_dir
-	.. "lua_modules/lib/lua/5.1/?/init.so"
+package.path = package.path .. ";" .. script_dir .. "lua-ljsqlite3/init.lua"
 
 local json = require("json")
-local luasql = require("luasql.sqlite3")
+local sql = require("ljsqlite3")
 
 local function main(search_key)
 	local db_path = os.getenv("HOME")
@@ -29,20 +24,19 @@ local function main(search_key)
 			or "/Library/Group Containers/JLMPQHK86H.com.culturedcode.ThingsMac/ThingsData-QZTVJ/Things Database.thingsdatabase/main.sqlite"
 		)
 
-	-- Create environment and connect to database
-	local env = assert(luasql.sqlite3())
-	local conn, err = env:connect(db_path)
+	local max_results = tonumber(os.getenv("MAX_RESULTS")) or 100
+
+	-- Connect to database
+	local conn, err = sql.open(db_path)
 	if not conn then
 		error("Failed to connect to database: " .. (err or "unknown error"))
 	end
 
-	-- Escape search key and prepare LIKE patterns
-	local escaped_search = conn:escape(search_key)
-	local like_pattern = "%" .. escaped_search .. "%"
+	-- Prepare LIKE patterns
+	local like_pattern = "%" .. search_key .. "%"
 
-	-- Construct SQL query with interpolated patterns
-	local task_query = string.format(
-		[[
+	-- Prepare SQL query with parameter placeholders
+	local task_query = [[
         SELECT
             TMTask.title,
             TMTask.uuid,
@@ -55,48 +49,54 @@ local function main(search_key)
         LEFT JOIN TMTask AS Project ON TMTask.project = Project.uuid
         LEFT JOIN TMArea AS Area ON TMTask.area = Area.uuid
         WHERE TMTask.trashed = 0
-            AND (TMTask.title LIKE '%s' OR TMTask.notes LIKE '%s')
+            AND (TMTask.title LIKE ? OR TMTask.notes LIKE ?)
         ORDER BY
             TMTask.type DESC,
             TMTask.status ASC,
             startDate ASC
-    ]],
-		like_pattern,
-		like_pattern
-	)
+    ]]
 
-	-- Execute query and handle potential errors
-	local cur, err = conn:execute(task_query)
-	if not cur then
+	-- Prepare and execute statement
+	local stmt, err = conn:prepare(task_query)
+	if not stmt then
 		conn:close()
-		env:close()
-		error("Failed to execute query: " .. (err or "unknown error"))
+		error("Failed to prepare statement: " .. (err or "unknown error"))
 	end
 
-	-- Process query results
-	local results = {}
-	local row = cur:fetch({}, "a") -- 'a' for associative (named) indices
-	while row do
-		local subtitle = row.project_title or row.area_title or ""
-		local arg = row.uuid and "things:///show?id=" .. row.uuid or ""
+	stmt:bind(like_pattern, like_pattern)
+	local resultset, nrow = stmt:resultset()
 
-		table.insert(results, {
-			title = row.title or "Untitled Task",
-			subtitle = subtitle,
-			arg = arg,
-			valid = arg ~= "" and true or false,
-		})
-		row = cur:fetch(row, "a") -- Reuse the table for next row
+	-- Process results
+	local results = {}
+	if resultset and nrow > 0 then
+		for i = 1, nrow do
+			if i > max_results then
+				return json:encode({ items = results })
+			end
+			local title = resultset.title[i]
+			local uuid = resultset.uuid[i]
+			local project_title = resultset.project_title[i]
+			local area_title = resultset.area_title[i]
+
+			local subtitle = project_title or area_title or ""
+			local arg = uuid and "things:///show?id=" .. uuid or ""
+
+			table.insert(results, {
+				title = title or "Untitled Task",
+				subtitle = subtitle,
+				arg = arg,
+				valid = arg ~= "" and true or false,
+			})
+		end
 	end
 
 	-- Cleanup resources
-	cur:close()
+	stmt:close()
 	conn:close()
-	env:close()
 
-	print(json:encode({ items = results }))
+	return (json:encode({ items = results }))
 end
 
 -- Handle command-line arguments
 local arguments = table.concat(arg, " ")
-main(arguments)
+print(main(arguments))
