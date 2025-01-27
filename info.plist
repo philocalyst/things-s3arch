@@ -3,14 +3,27 @@
 <plist version="1.0">
 <dict>
 	<key>bundleid</key>
-	<string></string>
+	<string>com.github.philocalyst.thingssearch</string>
 	<key>connections</key>
 	<dict>
-		<key>FAFEE037-2EA7-4B24-970D-04829442043A</key>
+		<key>2970C279-91EC-4638-903A-FFC681827146</key>
 		<array>
 			<dict>
 				<key>destinationuid</key>
-				<string>E9CBD474-09E1-4B80-AFA0-F55852F33ED0</string>
+				<string>CA04E9CA-75A9-48D7-AC0E-F243FEEF62E3</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+				<key>vitoclose</key>
+				<false/>
+			</dict>
+		</array>
+		<key>4E889D3D-2D95-49D2-8FA4-633DB070BE83</key>
+		<array>
+			<dict>
+				<key>destinationuid</key>
+				<string>2970C279-91EC-4638-903A-FFC681827146</string>
 				<key>modifiers</key>
 				<integer>0</integer>
 				<key>modifiersubtext</key>
@@ -21,9 +34,9 @@
 		</array>
 	</dict>
 	<key>createdby</key>
-	<string></string>
+	<string>Philocalyst</string>
 	<key>description</key>
-	<string></string>
+	<string>Simple search for things!</string>
 	<key>disabled</key>
 	<false/>
 	<key>name</key>
@@ -36,7 +49,7 @@
 				<key>alfredfiltersresults</key>
 				<false/>
 				<key>alfredfiltersresultsmatchmode</key>
-				<integer>1</integer>
+				<integer>0</integer>
 				<key>argumenttreatemptyqueryasnil</key>
 				<true/>
 				<key>argumenttrimmode</key>
@@ -46,7 +59,7 @@
 				<key>escaping</key>
 				<integer>0</integer>
 				<key>keyword</key>
-				<string>t</string>
+				<string>{var:SEARCH_KEYWORD}</string>
 				<key>queuedelaycustom</key>
 				<integer>3</integer>
 				<key>queuedelayimmediatelyinitially</key>
@@ -54,19 +67,19 @@
 				<key>queuedelaymode</key>
 				<integer>0</integer>
 				<key>queuemode</key>
-				<integer>2</integer>
+				<integer>1</integer>
 				<key>runningsubtext</key>
-				<string>Retrieving</string>
+				<string>...</string>
 				<key>script</key>
 				<string></string>
 				<key>scriptargtype</key>
 				<integer>1</integer>
 				<key>scriptfile</key>
-				<string>things_search.lua</string>
+				<string>Workflow/things_search.lua</string>
 				<key>subtext</key>
-				<string>Search all todos</string>
+				<string>Search your todos</string>
 				<key>title</key>
-				<string>Search Things</string>
+				<string>Things Search</string>
 				<key>type</key>
 				<integer>8</integer>
 				<key>withspace</key>
@@ -75,9 +88,40 @@
 			<key>type</key>
 			<string>alfred.workflow.input.scriptfilter</string>
 			<key>uid</key>
-			<string>FAFEE037-2EA7-4B24-970D-04829442043A</string>
+			<string>2970C279-91EC-4638-903A-FFC681827146</string>
 			<key>version</key>
 			<integer>3</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>action</key>
+				<integer>0</integer>
+				<key>argument</key>
+				<integer>0</integer>
+				<key>focusedappvariable</key>
+				<false/>
+				<key>focusedappvariablename</key>
+				<string></string>
+				<key>hotkey</key>
+				<integer>0</integer>
+				<key>hotmod</key>
+				<integer>0</integer>
+				<key>hotstring</key>
+				<string></string>
+				<key>leftcursor</key>
+				<false/>
+				<key>modsmode</key>
+				<integer>0</integer>
+				<key>relatedAppsMode</key>
+				<integer>0</integer>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.trigger.hotkey</string>
+			<key>uid</key>
+			<string>4E889D3D-2D95-49D2-8FA4-633DB070BE83</string>
+			<key>version</key>
+			<integer>2</integer>
 		</dict>
 		<dict>
 			<key>config</key>
@@ -91,33 +135,48 @@
 				<key>spaces</key>
 				<string></string>
 				<key>url</key>
-				<string>{query}</string>
+				<string></string>
 			</dict>
 			<key>type</key>
 			<string>alfred.workflow.action.openurl</string>
 			<key>uid</key>
-			<string>E9CBD474-09E1-4B80-AFA0-F55852F33ED0</string>
+			<string>CA04E9CA-75A9-48D7-AC0E-F243FEEF62E3</string>
 			<key>version</key>
 			<integer>1</integer>
 		</dict>
 	</array>
 	<key>readme</key>
-	<string>Simple search for things</string>
+	<string># Search Things, Powerfully (Alfred Workflow)
+
+Search Things as if you were there, except in Alfred.
+
+## Usage
+
+Find Todos using match search, via the keyword "ths" (User-changeable).
+Select a todo and get brought to its location in the things app.
+</string>
 	<key>uidata</key>
 	<dict>
-		<key>E9CBD474-09E1-4B80-AFA0-F55852F33ED0</key>
+		<key>2970C279-91EC-4638-903A-FFC681827146</key>
 		<dict>
 			<key>xpos</key>
-			<real>670</real>
+			<real>405</real>
 			<key>ypos</key>
-			<real>115</real>
+			<real>215</real>
 		</dict>
-		<key>FAFEE037-2EA7-4B24-970D-04829442043A</key>
+		<key>4E889D3D-2D95-49D2-8FA4-633DB070BE83</key>
 		<dict>
 			<key>xpos</key>
-			<real>395</real>
+			<real>170</real>
 			<key>ypos</key>
-			<real>105</real>
+			<real>215</real>
+		</dict>
+		<key>CA04E9CA-75A9-48D7-AC0E-F243FEEF62E3</key>
+		<dict>
+			<key>xpos</key>
+			<real>615</real>
+			<key>ypos</key>
+			<real>215</real>
 		</dict>
 	</dict>
 	<key>userconfigurationconfig</key>
@@ -126,27 +185,50 @@
 			<key>config</key>
 			<dict>
 				<key>default</key>
-				<string></string>
+				<string>/Library/Group Containers/JLMPQHK86H.com.culturedcode.ThingsMac/ThingsData-QZTVJ/Things Database.thingsdatabase</string>
 				<key>placeholder</key>
 				<string>Enter here...</string>
 				<key>required</key>
-				<true/>
+				<false/>
 				<key>trim</key>
-				<true/>
+				<false/>
 			</dict>
 			<key>description</key>
-			<string>The source the workflow pulls from</string>
+			<string>This is only if the workflow seems to have blank results, meaning your database path is irregular. Details are in the documentation.</string>
 			<key>label</key>
-			<string>Your Things Database Path</string>
+			<string>(OPTIONAL) Things Database Path</string>
 			<key>type</key>
 			<string>textfield</string>
 			<key>variable</key>
 			<string>THINGS_DATABASE</string>
 		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>default</key>
+				<string>ths</string>
+				<key>placeholder</key>
+				<string>Enter here...</string>
+				<key>required</key>
+				<false/>
+				<key>trim</key>
+				<true/>
+			</dict>
+			<key>description</key>
+			<string></string>
+			<key>label</key>
+			<string>Search keyword</string>
+			<key>type</key>
+			<string>textfield</string>
+			<key>variable</key>
+			<string>SEARCH_KEYWORD</string>
+		</dict>
 	</array>
+	<key>variablesdontexport</key>
+	<array/>
 	<key>version</key>
-	<string></string>
+	<string>0.99.2</string>
 	<key>webaddress</key>
-	<string></string>
+	<string>https://github.com/philocalyst/AlfredThingsSearch</string>
 </dict>
 </plist>
