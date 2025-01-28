@@ -134,7 +134,7 @@ local search_key = table.concat(args, " ")
 
 local ok, result = pcall(main, search_key)
 if not ok then
-	print(json:encode({ items = { { title = "Error", subtitle = result, valid = false } } }))
+	print("Error", result)
 else
 	print(result)
 end
