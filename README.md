@@ -3,12 +3,12 @@
 Search Things as if you were there, except in Alfred.
 
 ![example1](Assets/example-preview.png)
-![example2](Assets/example-blank.png)
 
 ## Usage
 
 Find Todos using match search, via the keyword "ths" (User-changeable).
 Select a todo and get brought to its location in the things app.
+![example2](Assets/example-blank.png)
 
 ## Dependencies
 
