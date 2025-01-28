@@ -107,8 +107,6 @@
 				<integer>0</integer>
 				<key>hotmod</key>
 				<integer>0</integer>
-				<key>hotstring</key>
-				<string></string>
 				<key>leftcursor</key>
 				<false/>
 				<key>modsmode</key>
@@ -150,11 +148,33 @@
 
 Search Things as if you were there, except in Alfred.
 
+![ishare-1738002952-arc](https://github.com/user-attachments/assets/f7261237-bbee-4e31-bbd4-61ccc44f8bfa)
+![ishare-1738002920-arc](https://github.com/user-attachments/assets/3db47d3c-91ed-413e-8905-ebd8de9b44e2)
+
+
 ## Usage
 
 Find Todos using match search, via the keyword "ths" (User-changeable).
 Select a todo and get brought to its location in the things app.
-</string>
+
+## Dependencies
+
+All of the below can be installed with one simple command:
+'brew install luajit luarocks'
+(The libraries are default bundled)
+
+- luaJIT (Ensure this is installed on your system)
+- luarocks
+- Libraries
+    - https://luarocks.org/modules/tomasguisasola/luasql-sqlite3
+    - https://luarocks.org/modules/jiyinyiyong/json-lua
+
+## Finding Things Database Path
+
+- Ensure that you have "Show hidden files on" in Finder
+- Then, enter Library -&gt; Group Containers -&gt; (WEIRD NUMBER STRING)com.culturedcode.Thingsmac -&gt; ThingsData(MORE NUMBERS) -&gt; (something)database(something) -&gt; RIGHT CLICK ON IT -&gt; "Show package contents"
+- Then you need to select main.sqlite - Basic solution: While selected, go to the Edit menu -&gt; copy as pathname
+  Yay!!!!</string>
 	<key>uidata</key>
 	<dict>
 		<key>2970C279-91EC-4638-903A-FFC681827146</key>
@@ -185,7 +205,7 @@ Select a todo and get brought to its location in the things app.
 			<key>config</key>
 			<dict>
 				<key>default</key>
-				<string>/Library/Group Containers/JLMPQHK86H.com.culturedcode.ThingsMac/ThingsData-QZTVJ/Things Database.thingsdatabase</string>
+				<string>/Library/Group Containers/JLMPQHK86H.com.culturedcode.ThingsMac/ThingsData-QZTVJ/Things Database.thingsdatabase/main.sqlite</string>
 				<key>placeholder</key>
 				<string>Enter here...</string>
 				<key>required</key>
@@ -223,11 +243,53 @@ Select a todo and get brought to its location in the things app.
 			<key>variable</key>
 			<string>SEARCH_KEYWORD</string>
 		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>defaultvalue</key>
+				<integer>50</integer>
+				<key>markercount</key>
+				<integer>5</integer>
+				<key>maxvalue</key>
+				<integer>1000</integer>
+				<key>minvalue</key>
+				<integer>0</integer>
+				<key>onlystoponmarkers</key>
+				<false/>
+				<key>showmarkers</key>
+				<true/>
+			</dict>
+			<key>description</key>
+			<string>Lower improves performance.</string>
+			<key>label</key>
+			<string>Max Number of Results</string>
+			<key>type</key>
+			<string>slider</string>
+			<key>variable</key>
+			<string>MAX_RESULTS</string>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>default</key>
+				<true/>
+				<key>required</key>
+				<false/>
+				<key>text</key>
+				<string>Yes:</string>
+			</dict>
+			<key>description</key>
+			<string>Will perform a sensitive search if your search query includes an uppercase character.</string>
+			<key>label</key>
+			<string>Automatic case sensitive?</string>
+			<key>type</key>
+			<string>checkbox</string>
+			<key>variable</key>
+			<string>SMART_CASE</string>
+		</dict>
 	</array>
-	<key>variablesdontexport</key>
-	<array/>
 	<key>version</key>
-	<string>0.99.2</string>
+	<string>0.99.3</string>
 	<key>webaddress</key>
 	<string>https://github.com/philocalyst/AlfredThingsSearch</string>
 </dict>
