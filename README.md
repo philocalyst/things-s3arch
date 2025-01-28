@@ -2,8 +2,8 @@
 
 Search Things as if you were there, except in Alfred.
 
-![example1](assets/example-preview.png)
-![example2](assets/example-blank.png)
+![example1](Assets/example-preview.png)
+![example2](Assets/example-blank.png)
 
 ## Usage
 
