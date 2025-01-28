@@ -33,8 +33,8 @@ local function get_db_connection()
 end
 
 local function smart_case(str)
-	for char in str do
-		if str:match("^%u+$") ~= nil then
+	for char in str:gmatch(".") do
+		if char:match("%u") then
 			return true
 		end
 	end
