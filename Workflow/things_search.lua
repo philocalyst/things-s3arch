@@ -32,6 +32,15 @@ local function get_db_connection()
 	return conn
 end
 
+local function smart_case(str)
+	for char in str do
+		if str:match("^%u+$") ~= nil then
+			return true
+		end
+	end
+	return false
+end
+
 local function fetch_tasks(conn)
 	local query = [[
         SELECT
@@ -61,14 +70,22 @@ local function process_tasks(tasks, search_key, max_results)
 	local titles = {}
 	for i, task in ipairs(tasks) do
 		titles[i] = task.title
+		titles[i + #tasks] = task.notes
 	end
 
-	local matches = fzy.filter(search_key, titles, false)
+	local case_sensitive = os.getenv("SMART_CASE") or smart_case(search_key)
+	local matches = fzy.filter(search_key, titles, case_sensitive)
 	local results = {}
 
 	for i = 1, math.min(#matches, max_results) do
 		local idx = matches[i]
-		local task = tasks[idx[1]]
+		local task
+		local fd_indx = idx[1]
+		if fd_indx > #tasks then
+			task = tasks[fd_indx - #tasks]
+		else
+			task = tasks[fd_indx]
+		end
 		local subtitle = task.project_title or task.area_title or ""
 		local arg = task.uuid and "things:///show?id=" .. task.uuid or ""
 
@@ -97,6 +114,7 @@ local function main(search_key)
 	if nrow > 0 then
 		for i = 1, nrow do
 			tasks[i] = {
+				notes = resultset.notes[i],
 				title = resultset.title[i],
 				uuid = resultset.uuid[i],
 				project_title = resultset.project_title[i],
