@@ -66,6 +66,18 @@ local function fetch_tasks(conn)
 	return resultset, nrow
 end
 
+local function sort_matches(matches)
+	table.sort(matches, function(a, b)
+		-- Sort by score (descending)
+		if a[3] ~= b[3] then
+			return a[3] > b[3]
+		end
+		-- If scores are equal, sort by index (ascending)
+		return a[1] < b[1]
+	end)
+	return matches
+end
+
 local function process_tasks(tasks, search_key, max_results)
 	local titles = {}
 	for i, task in ipairs(tasks) do
@@ -75,6 +87,7 @@ local function process_tasks(tasks, search_key, max_results)
 
 	local case_sensitive = os.getenv("SMART_CASE") or smart_case(search_key)
 	local matches = fzy.filter(search_key, titles, case_sensitive)
+	matches = sort_matches(matches)
 	local results = {}
 
 	for i = 1, math.min(#matches, max_results) do
