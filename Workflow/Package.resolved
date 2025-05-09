@@ -1,0 +1,24 @@
+{
+  "originHash" : "5633b9d7ea080d55d185745734ed188499193c08300d7e1b8818e9d62d3429f5",
+  "pins" : [
+    {
+      "identity" : "fuse-swift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/krisk/fuse-swift.git",
+      "state" : {
+        "revision" : "26ba868691b2d8b7bf2b1322951eb591be70ccca",
+        "version" : "1.4.0"
+      }
+    },
+    {
+      "identity" : "sqlite-orm-swift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/fnc12/sqlite-orm-swift",
+      "state" : {
+        "revision" : "f8a888ef8be0d3376d72c8ffafb102467d591759",
+        "version" : "0.0.1"
+      }
+    }
+  ],
+  "version" : 3
+}
