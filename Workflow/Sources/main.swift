@@ -115,23 +115,6 @@ func makeStorage(dbPath: String) throws -> Storage {
         keyPath: \TMTask.uuid,
         constraints: primaryKey(), notNull()),
     Column(
-      name: "trashed",
-      keyPath: \TMTask.trashed,
-      constraints: notNull()),
-    Column(
-      name: "title",
-      keyPath: \TMTask.title),
-    Column(
-      name: "notes",
-      keyPath: \TMTask.notes),
-    Column(
-      name: "project",
-      keyPath: \TMTask.project),
-    Column(
-      name: "area",
-      keyPath: \TMTask.area),
-
-    Column(
       name: "leavesTombstone",
       keyPath: \TMTask.leavesTombstone,
       constraints: notNull()),
@@ -154,6 +137,16 @@ func makeStorage(dbPath: String) throws -> Storage {
     Column(
       name: "stopDate",
       keyPath: \TMTask.stopDate),
+    Column(
+      name: "trashed",
+      keyPath: \TMTask.trashed,
+      constraints: notNull()),
+    Column(
+      name: "title",
+      keyPath: \TMTask.title),
+    Column(
+      name: "notes",
+      keyPath: \TMTask.notes),
     Column(
       name: "notesSync",
       keyPath: \TMTask.notesSync,
@@ -196,6 +189,12 @@ func makeStorage(dbPath: String) throws -> Storage {
     Column(
       name: "todayIndexReferenceDate",
       keyPath: \TMTask.todayIndexReferenceDate),
+    Column(
+      name: "area",
+      keyPath: \TMTask.area),
+    Column(
+      name: "project",
+      keyPath: \TMTask.project),
     Column(
       name: "heading",
       keyPath: \TMTask.heading),
