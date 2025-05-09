@@ -67,9 +67,6 @@ struct AlfredItem: Codable {
   let subtitle: String
   let arg: String
   let valid: Bool
-  let score: Double?
-  let matchedField: String?
-  let positions: [Int]?
 }
 
 // MARK: – Helpers
@@ -299,9 +296,6 @@ func main() {
       subtitle: "",
       arg: "",
       valid: false,
-      score: nil,
-      matchedField: nil,
-      positions: nil
     )
     print(
       String(
@@ -318,9 +312,6 @@ func main() {
       subtitle: error.localizedDescription,
       arg: "",
       valid: false,
-      score: nil,
-      matchedField: nil,
-      positions: nil
     )
     print(
       String(
@@ -341,9 +332,6 @@ func main() {
       subtitle: error.localizedDescription,
       arg: "",
       valid: false,
-      score: nil,
-      matchedField: nil,
-      positions: nil
     )
     print(
       String(
@@ -425,9 +413,6 @@ func main() {
         subtitle: subtitleMap[h.uuid] ?? "",
         arg: arg,
         valid: !arg.isEmpty,
-        score: h.score,
-        matchedField: h.field,
-        positions: h.positions
       ))
   }
 
