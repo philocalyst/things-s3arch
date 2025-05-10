@@ -5,6 +5,9 @@ import PackageDescription
 
 let package = Package(
   name: "things_search",
+  platforms: [
+    .macOS(.v12)
+  ],
   dependencies: [
     .package(
       url: "https://github.com/fnc12/sqlite-orm-swift",

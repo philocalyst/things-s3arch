@@ -271,7 +271,7 @@ func makeStorage(dbPath: String) throws -> Storage {
 
 // MARK: – Main
 
-func main() {
+func main() async throws {
   // 1) query arg
   let query = CommandLine.arguments
     .dropFirst()
@@ -342,81 +342,127 @@ func main() {
   // 5) only non-trashed tasks
   let rawTasks = allTasks.filter { $0.trashed == 0 }
 
-  // 6) build uuid→title maps for project/area lookups
-  let taskMap = Dictionary(
-    uniqueKeysWithValues:
-      allTasks.map { ($0.uuid, $0.title) }
+  // 6) Build uuid→title maps concurrently
+  async let taskMapResult = Dictionary(
+    uniqueKeysWithValues: allTasks.map { ($0.uuid, $0.title) }
   )
-  let areaMap = Dictionary(
-    uniqueKeysWithValues:
-      allAreas.map { ($0.uuid, $0.title) }
+  async let areaMapResult = Dictionary(
+    uniqueKeysWithValues: allAreas.map { ($0.uuid, $0.title) }
   )
 
-  // 7) build subtitleMap
-  var subtitleMap = [String: String]()
-  for t in rawTasks {
-    if let pid = t.project, let pt = taskMap[pid] {
-      subtitleMap[t.uuid] = pt
-    } else if let aid = t.area, let at = areaMap[aid] {
-      subtitleMap[t.uuid] = at
+  let (taskMap, areaMap) = await (taskMapResult, areaMapResult)
+
+  // 7) Build subtitleMap more efficiently
+  let subtitleMap = rawTasks.reduce(into: [String: String]()) { map, task in
+    if let pid = task.project, let pt = taskMap[pid] {
+      map[task.uuid] = pt
+    } else if let aid = task.area, let at = areaMap[aid] {
+      map[task.uuid] = at
     } else {
-      subtitleMap[t.uuid] = ""
+      map[task.uuid] = ""
     }
   }
 
-  // 8) flatten title+notes into searchable slots
+  // 8) Flatten title+notes into searchable slots
   struct Slot { let uuid, field, text: String }
-  var slots = [Slot]()
-  for t in rawTasks {
-    if !(t.title?.isEmpty == nil) {
-      slots.append(.init(uuid: t.uuid, field: "title", text: t.title!))
+  let slots = await withTaskGroup(of: [Slot].self) { group in
+    // Split tasks into chunks for parallel processing
+    let chunkSize = max(1, rawTasks.count / ProcessInfo.processInfo.processorCount)
+    let chunks = stride(from: 0, to: rawTasks.count, by: chunkSize).map {
+      Array(rawTasks[$0..<min($0 + chunkSize, rawTasks.count)])
     }
-    if let n = t.notes, !n.isEmpty {
-      slots.append(.init(uuid: t.uuid, field: "notes", text: n))
+
+    for chunk in chunks {
+      group.addTask {
+        var chunkSlots = [Slot]()
+        for t in chunk {
+          if let title = t.title, !title.isEmpty {
+            chunkSlots.append(.init(uuid: t.uuid, field: "title", text: title))
+          }
+          if let notes = t.notes, !notes.isEmpty {
+            chunkSlots.append(.init(uuid: t.uuid, field: "notes", text: notes))
+          }
+        }
+        return chunkSlots
+      }
     }
+
+    // Combine results
+    var allSlots = [Slot]()
+    for await chunkResult in group {
+      allSlots.append(contentsOf: chunkResult)
+    }
+    return allSlots
   }
 
-  // 9) fuzzy-search with Fuse
-  let fuse = Fuse()
+  // 9) Fuzzy-search with Fuse using concurrency
   let maxResults = Int(env["MAX_RESULTS"] ?? "50") ?? 50
-  var hits = [(uuid: String, field: String, positions: [Int], score: Double)]()
 
-  for s in slots {
-    if let result = fuse.search(query, in: s.text) {
-      // result.ranges is [ClosedRange<Int>]
-      let positions = result.ranges.flatMap { Array($0) }
-      hits.append(
-        (
-          uuid: s.uuid,
-          field: s.field,
-          positions: positions,
-          score: result.score
-        ))
+  let hits = await withTaskGroup(
+    of: [(uuid: String, field: String, positions: [Int], score: Double)].self
+  ) { group in
+    // split slots into roughly equal chunks
+    let processorCount = ProcessInfo.processInfo.processorCount
+    let chunkSize = max(1, slots.count / processorCount)
+    let chunks = stride(from: 0, to: slots.count, by: chunkSize).map {
+      Array(slots[$0..<min($0 + chunkSize, slots.count)])
     }
+
+    for chunk in chunks {
+      group.addTask {
+        // each task gets its own Fuse
+        let localFuse = Fuse()
+        var chunkHits = [(uuid: String, field: String, positions: [Int], score: Double)]()
+        for s in chunk {
+          if let result = localFuse.search(query, in: s.text) {
+            let positions = result.ranges.flatMap { Array($0) }
+            chunkHits.append(
+              (
+                uuid: s.uuid,
+                field: s.field,
+                positions: positions,
+                score: result.score
+              ))
+          }
+        }
+        return chunkHits
+      }
+    }
+
+    var allHits = [(uuid: String, field: String, positions: [Int], score: Double)]()
+    for await chunkResult in group {
+      allHits.append(contentsOf: chunkResult)
+    }
+    return allHits
   }
 
-  // 10) sort (lower Fuse.score is better) & unique by uuid
-  hits.sort { $0.score < $1.score }
+  // 10) Sort and filter results
+  let sortedHits = hits.sorted { $0.score < $1.score }
   var seen = Set<String>()
   var items = [AlfredItem]()
 
-  for h in hits where items.count < maxResults {
-    guard !seen.contains(h.uuid),
-      let rec = rawTasks.first(where: { $0.uuid == h.uuid })
-    else { continue }
-    seen.insert(h.uuid)
-    let arg = "things:///show?id=\(h.uuid)"
+  for hit in sortedHits where items.count < maxResults {
+    guard !seen.contains(hit.uuid),
+      let rec = rawTasks.first(where: { $0.uuid == hit.uuid })
+    else {
+      continue
+    }
+
+    seen.insert(hit.uuid)
+    guard let title = rec.title else { continue }
+
+    let arg = "things:///show?id=\(hit.uuid)"
     items.append(
       .init(
-        title: rec.title!,
-        subtitle: subtitleMap[h.uuid] ?? "",
+        title: title,
+        subtitle: subtitleMap[hit.uuid] ?? "",
         arg: arg,
-        valid: !arg.isEmpty,
-      ))
+        valid: !arg.isEmpty
+      )
+    )
   }
-
   // 11) output
   let data = try! JSONEncoder().encode(["items": items])
   print(String(data: data, encoding: .utf8)!)
 }
-main()
+try await main()
