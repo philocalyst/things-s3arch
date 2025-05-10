@@ -6,7 +6,7 @@ import PackageDescription
 let package = Package(
   name: "things_search",
   platforms: [
-    .macOS(.v12)
+    .macOS(.v13)
   ],
   dependencies: [
     .package(url: "https://github.com/stephencelis/SQLite.swift.git", from: "0.15.3"),
