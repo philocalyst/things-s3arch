@@ -79,9 +79,10 @@ func databasePathFromPrefs() -> String? {
     let plist = try? PropertyListSerialization
       .propertyList(from: data, options: [], format: nil)
       as? [String: Any],
-    let db = plist["THINGS_DATABASE"] as? String
+    let DB = plist["THINGS_DATABASE"] as? String
   else { return nil }
-  return db
+
+  return DB
 }
 
 /// Fallback: scan ~/Library/Group Containers/.../ThingsData*/
@@ -124,7 +125,6 @@ func loadAllTasksAndAreas(from dbPath: String)
   let tNotes = Expression<String?>("notes")
   let tProject = Expression<String?>("project")
   let tAreaFK = Expression<String?>("area")
-  //    …add any other TMTask columns you care about…
 
   //    — AREA columns
   let aUUID = Expression<String>("uuid")
@@ -133,7 +133,6 @@ func loadAllTasksAndAreas(from dbPath: String)
   let aIndex = Expression<Int?>("index")
   let aCachedTags = Expression<String?>("cachedTags")
   let aExperimental = Expression<String?>("experimental")
-  //    …add any other TMArea columns you care about…
 
   // 4) fetch ALL TASKS
   let allTasks: [TMTask] =
@@ -147,7 +146,6 @@ func loadAllTasksAndAreas(from dbPath: String)
       t.notes = row[tNotes]
       t.project = row[tProject]
       t.area = row[tAreaFK]
-      // …assign any other fields you need…
       return t
     }
 
@@ -163,7 +161,6 @@ func loadAllTasksAndAreas(from dbPath: String)
       a.index = row[aIndex]
       a.cachedTags = row[aCachedTags]
       a.experimental = row[aExperimental]
-      // …assign any other fields you need…
       return a
     }
 
@@ -188,6 +185,7 @@ func main() async throws {
     env["THINGS_DATABASE"]
     ?? databasePathFromPrefs()
     ?? discoverThingsDatabase()
+
   guard let path = dbPath else {
     let item = AlfredItem(
       title: "Could not locate Things database",
@@ -202,11 +200,26 @@ func main() async throws {
     return
   }
 
+  // Copy DB for safety (Depending on perms the SQL instance may not respond otherwise)
+  let fileManager = FileManager.init()
+  let tempDB = fileManager.temporaryDirectory.appending(path: "ThingsDatabase.sqlite")
+
+  try fileManager.copyItem(atPath: path, toPath: tempDB.path())
+
+  // Make sure the temporary file is cleaned up
+  defer {
+    do {
+      try fileManager.removeItem(at: tempDB)
+    } catch {
+      print("Shouldn't throw...")
+    }
+  }
+
   let allTasks: [TMTask]
   let allAreas: [TMArea]
 
   do {
-    (allTasks, allAreas) = try loadAllTasksAndAreas(from: path)
+    (allTasks, allAreas) = try loadAllTasksAndAreas(from: tempDB.path())
     // now you can filter `allTasks` or `allAreas` in‐memory as before
   } catch {
     let item = AlfredItem(
