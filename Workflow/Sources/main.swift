@@ -250,7 +250,14 @@ func main() async throws {
 
   // 7.1) If fuzzy search disabled, just spit out the result
   if env["WITH_FUZZY"] == "0" {
-    let items = rawTasks.map { task -> AlfredItem in
+    var filteredTasks: [TMTask] = [TMTask].init()
+
+    for task in rawTasks {
+      if task.title?.contains(query) == true {
+        filteredTasks.append(task)
+      }
+    }
+    let items = filteredTasks.map { task -> AlfredItem in
       let title = task.title ?? ""
       let subtitle = subtitleMap[task.uuid] ?? ""
       let arg = "things:///show?id=\(task.uuid)"
