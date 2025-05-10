@@ -204,6 +204,7 @@ func main() async throws {
   let fileManager = FileManager.init()
   let tempDB = fileManager.temporaryDirectory.appending(path: "ThingsDatabase.sqlite")
 
+  try? fileManager.removeItem(atPath: tempDB.path())  // Redudancy in-case cleanup fails
   try fileManager.copyItem(atPath: path, toPath: tempDB.path())
 
   // Make sure the temporary file is cleaned up
