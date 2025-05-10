@@ -9,10 +9,7 @@ let package = Package(
     .macOS(.v12)
   ],
   dependencies: [
-    .package(
-      url: "https://github.com/fnc12/sqlite-orm-swift",
-      from: "0.0.1"
-    ),
+    .package(url: "https://github.com/stephencelis/SQLite.swift.git", from: "0.15.3"),
     .package(
       url: "https://github.com/krisk/fuse-swift.git",
       from: "1.4.0"
@@ -24,7 +21,7 @@ let package = Package(
     .executableTarget(
       name: "things_search",
       dependencies: [
-        .product(name: "SQLiteORM", package: "sqlite-orm-swift"),
+        .product(name: "SQLite", package: "SQLite.swift"),
         .product(name: "Fuse", package: "fuse-swift"),
       ])
   ],

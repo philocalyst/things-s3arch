@@ -1,5 +1,5 @@
 {
-  "originHash" : "5633b9d7ea080d55d185745734ed188499193c08300d7e1b8818e9d62d3429f5",
+  "originHash" : "fdc0121073248aea38b64294344b4260e0f2cafe372bdd2d521e847ba38494e0",
   "pins" : [
     {
       "identity" : "fuse-swift",
@@ -11,12 +11,12 @@
       }
     },
     {
-      "identity" : "sqlite-orm-swift",
+      "identity" : "sqlite.swift",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/fnc12/sqlite-orm-swift",
+      "location" : "https://github.com/stephencelis/SQLite.swift.git",
       "state" : {
-        "revision" : "f8a888ef8be0d3376d72c8ffafb102467d591759",
-        "version" : "0.0.1"
+        "revision" : "a95fc6df17d108bd99210db5e8a9bac90fe984b8",
+        "version" : "0.15.3"
       }
     }
   ],

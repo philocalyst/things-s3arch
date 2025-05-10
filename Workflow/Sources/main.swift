@@ -1,10 +1,10 @@
 import Foundation
 import Fuse
-import SQLiteORM
+import SQLite
 
 // MARK: – Models
 
-struct TMTask: Initializable {
+struct TMTask {
   var uuid = ""
   var trashed = 0
   var title: String? = nil
@@ -51,7 +51,7 @@ struct TMTask: Initializable {
   init() {}
 }
 
-struct TMArea: Initializable {
+struct TMArea {
   var uuid = ""
   var title = ""
   var visible: Int? = nil
@@ -104,172 +104,71 @@ func discoverThingsDatabase() -> String? {
   return nil
 }
 
-/// Build your ORM storage
-func makeStorage(dbPath: String) throws -> Storage {
-  let taskTable = Table<TMTask>(
-    name: "TMTask",
-    columns:
-      // primary key
-      Column(
-        name: "uuid",
-        keyPath: \TMTask.uuid,
-        constraints: primaryKey(), notNull()),
-    Column(
-      name: "leavesTombstone",
-      keyPath: \TMTask.leavesTombstone,
-      constraints: notNull()),
-    Column(
-      name: "creationDate",
-      keyPath: \TMTask.creationDate,
-      constraints: notNull()),
-    Column(
-      name: "userModificationDate",
-      keyPath: \TMTask.userModificationDate,
-      constraints: notNull()),
-    Column(
-      name: "type",
-      keyPath: \TMTask.type,
-      constraints: notNull()),
-    Column(
-      name: "status",
-      keyPath: \TMTask.status,
-      constraints: notNull()),
-    Column(
-      name: "stopDate",
-      keyPath: \TMTask.stopDate),
-    Column(
-      name: "trashed",
-      keyPath: \TMTask.trashed,
-      constraints: notNull()),
-    Column(
-      name: "title",
-      keyPath: \TMTask.title),
-    Column(
-      name: "notes",
-      keyPath: \TMTask.notes),
-    Column(
-      name: "notesSync",
-      keyPath: \TMTask.notesSync,
-      constraints: notNull()),
-    Column(
-      name: "cachedTags",
-      keyPath: \TMTask.cachedTags),
-    Column(
-      name: "start",
-      keyPath: \TMTask.start,
-      constraints: notNull()),
-    Column(
-      name: "startDate",
-      keyPath: \TMTask.startDate,
-      constraints: notNull()),
-    Column(
-      name: "startBucket",
-      keyPath: \TMTask.startBucket),
-    Column(
-      name: "reminderTime",
-      keyPath: \TMTask.reminderTime),
-    Column(
-      name: "lastReminderInteractionDate",
-      keyPath: \TMTask.lastReminderInteractionDate),
-    Column(
-      name: "deadline",
-      keyPath: \TMTask.deadline),
-    Column(
-      name: "deadlineSuppressionDate",
-      keyPath: \TMTask.deadlineSuppressionDate),
-    Column(
-      name: "t2_deadlineOffset",
-      keyPath: \TMTask.t2_deadlineOffset),
-    Column(
-      name: "index",
-      keyPath: \TMTask.index),
-    Column(
-      name: "todayIndex",
-      keyPath: \TMTask.todayIndex),
-    Column(
-      name: "todayIndexReferenceDate",
-      keyPath: \TMTask.todayIndexReferenceDate),
-    Column(
-      name: "area",
-      keyPath: \TMTask.area),
-    Column(
-      name: "project",
-      keyPath: \TMTask.project),
-    Column(
-      name: "heading",
-      keyPath: \TMTask.heading),
-    Column(
-      name: "contact",
-      keyPath: \TMTask.contact),
-    Column(
-      name: "untrashedLeafActionsCount",
-      keyPath: \TMTask.untrashedLeafActionsCount,
-      constraints: notNull()),
-    Column(
-      name: "openUntrashedLeafActionsCount",
-      keyPath: \TMTask.openUntrashedLeafActionsCount,
-      constraints: notNull()),
-    Column(
-      name: "checklistItemsCount",
-      keyPath: \TMTask.checklistItemsCount,
-      constraints: notNull()),
-    Column(
-      name: "openChecklistItemsCount",
-      keyPath: \TMTask.openChecklistItemsCount,
-      constraints: notNull()),
-    Column(
-      name: "rt1_repeatingTemplate",
-      keyPath: \TMTask.rt1_repeatingTemplate),
-    Column(
-      name: "rt1_recurrenceRule",
-      keyPath: \TMTask.rt1_recurrenceRule),
-    Column(
-      name: "rt1_instanceCreationStartDate",
-      keyPath: \TMTask.rt1_instanceCreationStartDate),
-    Column(
-      name: "rt1_instanceCreationPaused",
-      keyPath: \TMTask.rt1_instanceCreationPaused),
-    Column(
-      name: "rt1_instanceCreationCount",
-      keyPath: \TMTask.rt1_instanceCreationCount),
-    Column(
-      name: "rt1_afterCompletionReferenceDate",
-      keyPath: \TMTask.rt1_afterCompletionReferenceDate),
-    Column(
-      name: "rt1_nextInstanceStartDate",
-      keyPath: \TMTask.rt1_nextInstanceStartDate),
-    Column(
-      name: "experimental",
-      keyPath: \TMTask.experimental),
-    Column(
-      name: "repeater",
-      keyPath: \TMTask.repeater),
-    Column(
-      name: "repeaterMigrationDate",
-      keyPath: \TMTask.repeaterMigrationDate)
-  )
-
-  let areaTable = Table<TMArea>(
-    name: "TMArea",
-    columns:
-      Column(
-        name: "uuid", keyPath: \TMArea.uuid,
-        constraints: primaryKey(), notNull()),
-    Column(name: "title", keyPath: \TMArea.title, constraints: notNull()),
-    Column(name: "visible", keyPath: \TMArea.visible),
-    Column(name: "index", keyPath: \TMArea.index),
-
-    Column(name: "cachedTags", keyPath: \TMArea.cachedTags),
-    Column(name: "experimental", keyPath: \TMArea.experimental)
-  )
-
-  return try Storage(
-    filename: dbPath,
-    tables: taskTable, areaTable
-  )
-}
-
 // MARK: – Main
+
+func loadAllTasksAndAreas(from dbPath: String)
+  throws -> (tasks: [TMTask], areas: [TMArea])
+{
+  // 1) open the DB
+  let db = try Connection(dbPath)
+
+  // 2) prepare the two Table handles
+  let taskTable = Table("TMTask")
+  let areaTable = Table("TMArea")
+
+  // 3) declare only the columns you actually need...
+  //    — TASK columns
+  let tUUID = Expression<String>("uuid")
+  let tTrashed = Expression<Int>("trashed")
+  let tTitle = Expression<String?>("title")
+  let tNotes = Expression<String?>("notes")
+  let tProject = Expression<String?>("project")
+  let tAreaFK = Expression<String?>("area")
+  //    …add any other TMTask columns you care about…
+
+  //    — AREA columns
+  let aUUID = Expression<String>("uuid")
+  let aTitle = Expression<String>("title")
+  let aVisible = Expression<Int?>("visible")
+  let aIndex = Expression<Int?>("index")
+  let aCachedTags = Expression<String?>("cachedTags")
+  let aExperimental = Expression<String?>("experimental")
+  //    …add any other TMArea columns you care about…
+
+  // 4) fetch ALL TASKS
+  let allTasks: [TMTask] =
+    try db
+    .prepare(taskTable)
+    .map { row in
+      var t = TMTask()
+      t.uuid = row[tUUID]
+      t.trashed = row[tTrashed]
+      t.title = row[tTitle]
+      t.notes = row[tNotes]
+      t.project = row[tProject]
+      t.area = row[tAreaFK]
+      // …assign any other fields you need…
+      return t
+    }
+
+  // 5) fetch ALL AREAS
+  let allAreas: [TMArea] =
+    try db
+    .prepare(areaTable)
+    .map { row in
+      var a = TMArea()
+      a.uuid = row[aUUID]
+      a.title = row[aTitle]
+      a.visible = row[aVisible]
+      a.index = row[aIndex]
+      a.cachedTags = row[aCachedTags]
+      a.experimental = row[aExperimental]
+      // …assign any other fields you need…
+      return a
+    }
+
+  return (allTasks, allAreas)
+}
 
 func main() async throws {
   // 1) query arg
@@ -303,39 +202,25 @@ func main() async throws {
     return
   }
 
-  // 3) open storage
-  let storage: Storage
-  do { storage = try makeStorage(dbPath: path) } catch {
-    let item = AlfredItem(
-      title: "Failed to open DB",
-      subtitle: error.localizedDescription,
-      arg: "",
-      valid: false,
-    )
-    print(
-      String(
-        data: try! JSONEncoder().encode(["items": [item]]),
-        encoding: .utf8)!)
-    return
-  }
-
-  // 4) fetch *all* tasks & areas, then filter in-memory
   let allTasks: [TMTask]
   let allAreas: [TMArea]
+
   do {
-    allTasks = try storage.getAll()  // → [TMTask]
-    allAreas = try storage.getAll()  // → [TMArea]
+    (allTasks, allAreas) = try loadAllTasksAndAreas(from: path)
+    // now you can filter `allTasks` or `allAreas` in‐memory as before
   } catch {
     let item = AlfredItem(
-      title: "Failed to query DB",
+      title: "DB Error",
       subtitle: error.localizedDescription,
       arg: "",
-      valid: false,
+      valid: false
     )
     print(
       String(
         data: try! JSONEncoder().encode(["items": [item]]),
-        encoding: .utf8)!)
+        encoding: .utf8
+      )!
+    )
     return
   }
 
@@ -361,6 +246,24 @@ func main() async throws {
     } else {
       map[task.uuid] = ""
     }
+  }
+
+  // 7.1) If fuzzy search disabled, just spit out the result
+  if env["WITH_FUZZY"] == "0" {
+    let items = rawTasks.map { task -> AlfredItem in
+      let title = task.title ?? ""
+      let subtitle = subtitleMap[task.uuid] ?? ""
+      let arg = "things:///show?id=\(task.uuid)"
+      return AlfredItem(
+        title: title,
+        subtitle: subtitle,
+        arg: arg,
+        valid: !arg.isEmpty
+      )
+    }
+    let data = try! JSONEncoder().encode(["items": items])
+    print(String(data: data, encoding: .utf8)!)
+    return
   }
 
   // 8) Flatten title+notes into searchable slots
