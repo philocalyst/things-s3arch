@@ -38,7 +38,7 @@
 	<key>createdby</key>
 	<string>Philocalyst</string>
 	<key>description</key>
-	<string>Search your things database</string>
+	<string>Simple search for Things!</string>
 	<key>disabled</key>
 	<false/>
 	<key>name</key>
@@ -259,9 +259,11 @@ Licensed under the MIT</string>
 			<string>WITH_FUZZY</string>
 		</dict>
 	</array>
+	<key>variablesdontexport</key>
+	<array/>
 	<key>version</key>
 	<string>1.0.0</string>
 	<key>webaddress</key>
-	<string></string>
+	<string>https://github.com/philocalyst/things-s3arch</string>
 </dict>
 </plist>
