@@ -3,14 +3,16 @@
 <plist version="1.0">
 <dict>
 	<key>bundleid</key>
-	<string>com.github.philocalyst.thingssearch</string>
+	<string>com.philocalyst.things-search</string>
+	<key>category</key>
+	<string>Productivity</string>
 	<key>connections</key>
 	<dict>
-		<key>2970C279-91EC-4638-903A-FFC681827146</key>
+		<key>6226AC17-AD12-4EC8-A1D5-E0260325478B</key>
 		<array>
 			<dict>
 				<key>destinationuid</key>
-				<string>CA04E9CA-75A9-48D7-AC0E-F243FEEF62E3</string>
+				<string>A3F077F9-8E94-4F94-A1F7-F256C41615CC</string>
 				<key>modifiers</key>
 				<integer>0</integer>
 				<key>modifiersubtext</key>
@@ -19,11 +21,11 @@
 				<false/>
 			</dict>
 		</array>
-		<key>4E889D3D-2D95-49D2-8FA4-633DB070BE83</key>
+		<key>FDFA1479-FE31-477C-9426-AC649B2DAABB</key>
 		<array>
 			<dict>
 				<key>destinationuid</key>
-				<string>2970C279-91EC-4638-903A-FFC681827146</string>
+				<string>6226AC17-AD12-4EC8-A1D5-E0260325478B</string>
 				<key>modifiers</key>
 				<integer>0</integer>
 				<key>modifiersubtext</key>
@@ -36,7 +38,7 @@
 	<key>createdby</key>
 	<string>Philocalyst</string>
 	<key>description</key>
-	<string>Simple search for things!</string>
+	<string>Search your things database</string>
 	<key>disabled</key>
 	<false/>
 	<key>name</key>
@@ -57,7 +59,7 @@
 				<key>argumenttype</key>
 				<integer>0</integer>
 				<key>escaping</key>
-				<integer>0</integer>
+				<integer>102</integer>
 				<key>keyword</key>
 				<string>{var:SEARCH_KEYWORD}</string>
 				<key>queuedelaycustom</key>
@@ -71,24 +73,24 @@
 				<key>runningsubtext</key>
 				<string>...</string>
 				<key>script</key>
-				<string></string>
+				<string>./things_search "$argv"</string>
 				<key>scriptargtype</key>
 				<integer>1</integer>
 				<key>scriptfile</key>
-				<string>Workflow/things_search.lua</string>
+				<string></string>
 				<key>subtext</key>
 				<string>Search your todos</string>
 				<key>title</key>
 				<string>Things Search</string>
 				<key>type</key>
-				<integer>8</integer>
+				<integer>11</integer>
 				<key>withspace</key>
 				<true/>
 			</dict>
 			<key>type</key>
 			<string>alfred.workflow.input.scriptfilter</string>
 			<key>uid</key>
-			<string>2970C279-91EC-4638-903A-FFC681827146</string>
+			<string>6226AC17-AD12-4EC8-A1D5-E0260325478B</string>
 			<key>version</key>
 			<integer>3</integer>
 		</dict>
@@ -117,7 +119,7 @@
 			<key>type</key>
 			<string>alfred.workflow.trigger.hotkey</string>
 			<key>uid</key>
-			<string>4E889D3D-2D95-49D2-8FA4-633DB070BE83</string>
+			<string>FDFA1479-FE31-477C-9426-AC649B2DAABB</string>
 			<key>version</key>
 			<integer>2</integer>
 		</dict>
@@ -138,65 +140,55 @@
 			<key>type</key>
 			<string>alfred.workflow.action.openurl</string>
 			<key>uid</key>
-			<string>CA04E9CA-75A9-48D7-AC0E-F243FEEF62E3</string>
+			<string>A3F077F9-8E94-4F94-A1F7-F256C41615CC</string>
 			<key>version</key>
 			<integer>1</integer>
 		</dict>
 	</array>
 	<key>readme</key>
-	<string># Search Things, Powerfully (Alfred Workflow)
+	<string># Search Things, Powerfully  
+Alfred Workflow for instant search and navigation in the Things 3 app  
 
-Search Things as if you were there, except in Alfred.
+![Result Demo](./Assets/example-preview.png)  
 
-![ishare-1738002952-arc](https://github.com/user-attachments/assets/f7261237-bbee-4e31-bbd4-61ccc44f8bfa)
-![ishare-1738002920-arc](https://github.com/user-attachments/assets/3db47d3c-91ed-413e-8905-ebd8de9b44e2)
+---
 
+## Features
+- Live full-text search of your Things 3 to-dos
+- Fuzzy matching—find items even with typos
+- Jump straight into the selected to-do in Things 3
+- Customizable Alfred keyword  
 
-## Usage
+---
 
-Find Todos using match search, via the keyword "ths" (User-changeable).
-Select a todo and get brought to its location in the things app.
+## Prerequisites
+1. **macOS** with Things 3 installed  
+2. **Alfred 5** (Powerpack required for workflows)  
+3. **Homebrew** for installing Lua dependencies  
 
-## Dependencies
-
-All of the below can be installed with one simple command:
-'brew install luajit luarocks'
-(The libraries are default bundled)
-
-- luaJIT (Ensure this is installed on your system)
-- luarocks
-- Libraries
-    - https://luarocks.org/modules/tomasguisasola/luasql-sqlite3
-    - https://luarocks.org/modules/jiyinyiyong/json-lua
-
-## Finding Things Database Path
-
-- Ensure that you have "Show hidden files on" in Finder
-- Then, enter Library -&gt; Group Containers -&gt; (WEIRD NUMBER STRING)com.culturedcode.Thingsmac -&gt; ThingsData(MORE NUMBERS) -&gt; (something)database(something) -&gt; RIGHT CLICK ON IT -&gt; "Show package contents"
-- Then you need to select main.sqlite - Basic solution: While selected, go to the Edit menu -&gt; copy as pathname
-  Yay!!!!</string>
+Licensed under the MIT</string>
 	<key>uidata</key>
 	<dict>
-		<key>2970C279-91EC-4638-903A-FFC681827146</key>
+		<key>6226AC17-AD12-4EC8-A1D5-E0260325478B</key>
 		<dict>
 			<key>xpos</key>
-			<real>405</real>
+			<real>420</real>
 			<key>ypos</key>
-			<real>215</real>
+			<real>95</real>
 		</dict>
-		<key>4E889D3D-2D95-49D2-8FA4-633DB070BE83</key>
+		<key>A3F077F9-8E94-4F94-A1F7-F256C41615CC</key>
 		<dict>
 			<key>xpos</key>
-			<real>170</real>
+			<real>305</real>
 			<key>ypos</key>
-			<real>215</real>
+			<real>335</real>
 		</dict>
-		<key>CA04E9CA-75A9-48D7-AC0E-F243FEEF62E3</key>
+		<key>FDFA1479-FE31-477C-9426-AC649B2DAABB</key>
 		<dict>
 			<key>xpos</key>
-			<real>615</real>
+			<real>200</real>
 			<key>ypos</key>
-			<real>215</real>
+			<real>105</real>
 		</dict>
 	</dict>
 	<key>userconfigurationconfig</key>
@@ -205,39 +197,18 @@ All of the below can be installed with one simple command:
 			<key>config</key>
 			<dict>
 				<key>default</key>
-				<string>/Library/Group Containers/JLMPQHK86H.com.culturedcode.ThingsMac/ThingsData-QZTVJ/Things Database.thingsdatabase/main.sqlite</string>
-				<key>placeholder</key>
-				<string>Enter here...</string>
-				<key>required</key>
-				<false/>
-				<key>trim</key>
-				<false/>
-			</dict>
-			<key>description</key>
-			<string>This is only if the workflow seems to have blank results, meaning your database path is irregular. Details are in the documentation.</string>
-			<key>label</key>
-			<string>(OPTIONAL) Things Database Path</string>
-			<key>type</key>
-			<string>textfield</string>
-			<key>variable</key>
-			<string>THINGS_DATABASE</string>
-		</dict>
-		<dict>
-			<key>config</key>
-			<dict>
-				<key>default</key>
 				<string>ths</string>
 				<key>placeholder</key>
-				<string>Enter here...</string>
+				<string></string>
 				<key>required</key>
-				<false/>
+				<true/>
 				<key>trim</key>
 				<true/>
 			</dict>
 			<key>description</key>
 			<string></string>
 			<key>label</key>
-			<string>Search keyword</string>
+			<string>The keyword for your search</string>
 			<key>type</key>
 			<string>textfield</string>
 			<key>variable</key>
@@ -253,16 +224,16 @@ All of the below can be installed with one simple command:
 				<key>maxvalue</key>
 				<integer>1000</integer>
 				<key>minvalue</key>
-				<integer>0</integer>
+				<integer>1</integer>
 				<key>onlystoponmarkers</key>
 				<false/>
 				<key>showmarkers</key>
 				<true/>
 			</dict>
 			<key>description</key>
-			<string>Lower improves performance.</string>
+			<string>The maximum number of results for your search</string>
 			<key>label</key>
-			<string>Max Number of Results</string>
+			<string>Number of Results</string>
 			<key>type</key>
 			<string>slider</string>
 			<key>variable</key>
@@ -276,21 +247,21 @@ All of the below can be installed with one simple command:
 				<key>required</key>
 				<false/>
 				<key>text</key>
-				<string>Yes:</string>
+				<string></string>
 			</dict>
 			<key>description</key>
-			<string>Will perform a sensitive search if your search query includes an uppercase character.</string>
+			<string>Do you want to search fuzzily?</string>
 			<key>label</key>
-			<string>Automatic case sensitive?</string>
+			<string>Fuzzy search</string>
 			<key>type</key>
 			<string>checkbox</string>
 			<key>variable</key>
-			<string>SMART_CASE</string>
+			<string>WITH_FUZZY</string>
 		</dict>
 	</array>
 	<key>version</key>
-	<string>0.99.3</string>
+	<string>1.0.0</string>
 	<key>webaddress</key>
-	<string>https://github.com/philocalyst/AlfredThingsSearch</string>
+	<string></string>
 </dict>
 </plist>
